@@ -1,0 +1,72 @@
+{% extends "shablon.html" %}
+{% load categories_tags %}
+{% block filter %}
+{% get_categories as categories %}
+
+{% get_int request.GET.filter  as filter %}
+<form class="row g-3 needs-validation" novalidate>
+
+
+  <div class="col-md-12 position-relative">
+
+    <label for="validationTooltip04" class="form-label">Категория:</label>
+    <select class="form-select" id="validationTooltip04" required name="filter">
+
+         <option value="">Всё</option>
+        {% for categiry in categories %}
+            <option value="{{categiry.pk}}" {% if filter  == categiry.pk %} selected {% endif %}>{{categiry}}</option>
+        {{ categiry.id }}
+        {% endfor %}
+
+    </select>
+    <div class="invalid-tooltip">
+      Please select a valid state.
+    </div>
+  </div>
+
+  <div class="col-12">
+    <button class="btn btn-primary" type="submit">Применить фильтр</button>
+  </div>
+</form>
+{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+        {% for test in Tests %}
+
+        <div class="col">
+          <div class="card shadow-sm">
+            <img class="bd-placeholder-img card-img-top" width="100%" height="225" src="{{ test.image.url }}" >
+            <div class="card-body">
+                <p class="card-text"><strong>{{test}}</strong><br><strong>Сложность:</strong> {{ test.difficulty }} <br>{{test.description|safe|linebreaks|truncatewords:20}}</p>
+              <div class="d-flex justify-content-between align-items-center">
+                <div class="btn-group">
+                    <a class="btn btn-success" href="{{ test.get_absolute_url }}">Пройти тест</a>
+                </div>
+                <small class="text-muted">{{ test.timer }} mins</small>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+    </div>
+
+
+  <ul class="pagination pagination-lg">
+
+{% for p in page_obj.paginator.page_range %}
+      {% if page_obj.number == p %}
+      <li class="page-item active">
+    <a class="page-link " href="?page={{ p }}&filter={{request.GET.filter}}">{{p}}</a>
+</li>
+      {% else %}
+<li class="page-item">
+    <a class="page-link" href="?page={{ p }}&filter={{request.GET.filter}}">{{p}}</a>
+</li>
+      {% endif %}
+{% endfor %}
+</ul>
+
+
+</div>
+{% endblock %}
