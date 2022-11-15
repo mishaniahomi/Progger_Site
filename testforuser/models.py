@@ -1,5 +1,7 @@
 from django.db import models
 from django.urls import reverse
+
+
 # Create your models here.
 
 
@@ -38,5 +40,28 @@ class Test(models.Model):
         return self.title
 
 
+class Question(models.Model):
+    description = models.TextField(verbose_name='Вопрос')
+    test_id = models.ForeignKey('Test', verbose_name='Тест', on_delete= models.CASCADE)
+
+    def __str__(self):
+        return "{} {}".format(self.test_id, self.description)
+
+    class Meta:
+        verbose_name = 'Вопрос'
+        verbose_name_plural = 'Вопросы'
+        ordering = ['test_id']
+
+class Answer(models.Model):
+    title = models.CharField(max_length=300, verbose_name='Ответ')
+    question_id = models.ForeignKey(Question, related_name='answers', verbose_name='Вопрос', on_delete= models.CASCADE)
+    right_false = models.BooleanField('Верный или отрицательный ответ')
 
 
+    def __str__(self):
+        return "{} {} {}".format(self.question_id, self.title, self.right_false)
+
+    class Meta:
+        verbose_name = 'Ответ'
+        verbose_name_plural = 'Ответы'
+        ordering = ['question_id']

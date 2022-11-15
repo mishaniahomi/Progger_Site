@@ -2,13 +2,59 @@
 {% load categories_tags %}
 {% block filter %}
 
-
+<img src="{{ object.image.url }}" class="img-fluid" alt="Responsive image">
 
 
 {% endblock %}
 {% block content %}
-{{ object }}
 
+<div class="row align-items-center">
 
+  <div class="col-md-12">
+      <div class="row align-items-left display-4">
+          {{ object.title }}
+      </div>
+      <div class="row align-items-left">
+          Сложность: {{ object.difficulty }}
+      </div>
+      <div class="row align-items-left">
+          Категория: {{ object.category }}
+      </div>
+      <div class="row align-items-left">
+          Время: {{ object.timer }}
+      </div>
+      <div class="row align-items-left ">
+          Описание:
+      </div>
+      <div class="row align-items-left lead">
+          {{ object.description }}
+      </div>
+      <div class="row align-items-left lead">
+         <button type="button" class="btn btn-success">Начать тестирование</button>
+      </div>
+
+  </div>
+
+<script>
+$(document).ready(function(){
+
+function square() {
+const search = {{ object.pk }}
+console.log(search.value)
+    $.get("{% url 'queststest' object.pk %}", function(data, status){
+            console.log(data);
+<!--            const list = document.getElementById("list");-->
+<!--            list.innerHTML = "<tr><td>id</td><td>name</td><td>email</td></tr>";-->
+<!--            data.forEach(function(item, index, array){-->
+<!--            list.innerHTML += `<tr><td> ${item['id']}</td><td> ${item['name']}</td><td> ${item['email']}</td></tr>`;-->
+<!--                  //console.log(item['id'], item['name'], item['email'] )-->
+<!--            });-->
+        });
+}
+square() ;
+
+});
+</script>
+  <table id="list" border="1"></table>
 
 {% endblock %}
