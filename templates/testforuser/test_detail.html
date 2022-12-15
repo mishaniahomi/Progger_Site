@@ -8,53 +8,100 @@
 {% endblock %}
 {% block content %}
 
+
+
 <div class="row align-items-center">
 
   <div class="col-md-12">
       <div class="row align-items-left display-4">
           {{ object.title }}
       </div>
-      <div class="row align-items-left">
-          Сложность: {{ object.difficulty }}
-      </div>
-      <div class="row align-items-left">
-          Категория: {{ object.category }}
-      </div>
-      <div class="row align-items-left">
-          Время: {{ object.timer }}
-      </div>
-      <div class="row align-items-left ">
-          Описание:
-      </div>
-      <div class="row align-items-left lead">
-          {{ object.description }}
-      </div>
-      <div class="row align-items-left lead">
-         <button type="button" class="btn btn-success">Начать тестирование</button>
-      </div>
+      <form method="post" >
+        {% csrf_token %}
+      <div id="list">
 
+          <div class="row align-items-left">
+              Сложность: {{ object.difficulty }}
+          </div>
+          <div class="row align-items-left">
+              Категория:
+              <div class="container-fluid">
+        <div class="row row-cols-2 row-cols-sm-2 row-cols-md-6 g-3">
+              {% for category in object.category.all %}
+
+                <button type="button" class="btn {{ category.color }}">{{ category }}</button>
+              {% endfor %}
+        </div>
+              </div>
+          </div>
+          <div class="row align-items-left">
+              Время: {{ object.timer }}
+          </div>
+          <div class="row align-items-left ">
+              Описание:
+          </div>
+          <div class="row align-items-left lead">
+              {{ object.description }}
+          </div>
+          <div class="row align-items-left lead">
+             <button id="begin" type="button" class="btn btn-success">Начать тестирование</button>
+          </div>
+        </div>
+          </form>
   </div>
 
 <script>
-$(document).ready(function(){
-
-function square() {
+begin.onclick = function(){
 const search = {{ object.pk }}
-console.log(search.value)
     $.get("{% url 'queststest' object.pk %}", function(data, status){
-            console.log(data);
-<!--            const list = document.getElementById("list");-->
-<!--            list.innerHTML = "<tr><td>id</td><td>name</td><td>email</td></tr>";-->
-<!--            data.forEach(function(item, index, array){-->
-<!--            list.innerHTML += `<tr><td> ${item['id']}</td><td> ${item['name']}</td><td> ${item['email']}</td></tr>`;-->
-<!--                  //console.log(item['id'], item['name'], item['email'] )-->
-<!--            });-->
+            const list = document.getElementById("list");
+            list.innerHTML="";
+            console.log(typeof data);
+            data.forEach(function(item, index, array){
+            list.innerHTML += `${item['description']}<fieldset id="group${item['id']}">`;
+            let AnswersPull = item['answers'];
+            AnswersPull.forEach(function(answer, Tindex, Tarray){
+            list.innerHTML += `<input class="answer" type="radio" value="${answer['id']}" name="group${item['id']}">${answer['title']}<br>`;
+            });
+            list.innerHTML += ` </fieldset>`;
+            });
+              list.innerHTML += ` <button id="endtest" onclick="EndTest();" type="button" class="btn btn-success">Закончить тестирование</button> `;
         });
-}
-square() ;
-
-});
+};
 </script>
-  <table id="list" border="1"></table>
+  <script> function EndTest(){
+            var objects = document.querySelectorAll(".answer");
+            console.log("I am an endtest button!");
+            let arr = new Array();
+            let count = 0;
+            for(var radio of objects){
+                if(radio.checked){
+                    arr[count] = radio.value;
+                    count = count + 1;
+                }
+            }
+          let student = {
+             test_id: {{ object.id }},
+             answers: arr,
+             counter: count,
+           };
+            console.log(JSON.parse(JSON.stringify(student)));
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", "/testforuser/proverka", true);
+            xhr.onload = () => {
+                if (xhr.status == 200) {
+                    console.log(xhr.responseText);
+                    const list = document.getElementById("list");
+                    response_data = JSON.parse(xhr.responseText);
+                    list.innerHTML = ` <div class="row align-items-left">Количество правильных ответов: ${response_data['right_counter']} из ${response_data['question_count']}  </div>` ;
+                    list.innerHTML += ` <div class="row align-items-left">Прогресс теста: ${response_data['progress']} % </div>` ;
+                    list.innerHTML += ` <div class="row align-items-left">Вы не ответили на: ${response_data['is_unanswered']} вопрос(ов)</div>` ;
+                } else {
+                    console.log("Server response: ", xhr.statusText);
+                }
+            };
+            xhr.send(JSON.stringify(student));
 
+    };
+    </script>
 {% endblock %}

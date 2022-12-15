@@ -1,9 +1,9 @@
 from django.contrib import admin
-from .models import Test, Category, Question, Answer
+from .models import Test, Category, Question, Answer, Kit
 
 
 class TestAdmin(admin.ModelAdmin):
-    list_display = ('id', 'title', 'difficulty', 'category')
+    list_display = ('id', 'title', 'difficulty', )
     list_display_links = ('id', 'title', 'difficulty')
     search_fields = ('title', 'description')
 
@@ -28,6 +28,6 @@ class CategoryAdmin(admin.ModelAdmin):
 
 admin.site.register(Question)
 admin.site.register(Answer)
-
+admin.site.register(Kit)
 admin.site.register(Test, TestAdmin)
 admin.site.register(Category, CategoryAdmin)

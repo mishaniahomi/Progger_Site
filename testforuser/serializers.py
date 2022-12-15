@@ -9,8 +9,7 @@ class AnswerSerializer(serializers.ModelSerializer):
 
 
 class QuestionSerializer(serializers.ModelSerializer):
-    answers = serializers.StringRelatedField(many=True)
-
+    answers = AnswerSerializer(many=True)
     class Meta:
         model = Question
         fields = ("id", "description", "test_id", "answers")
