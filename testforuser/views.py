@@ -1,6 +1,5 @@
-from django.shortcuts import render
 from django.views.generic import ListView, DetailView
-from .models import Test, Answer, Question, Kit
+from .models import Test, Answer, Question
 from .serializers import AnswerSerializer, QuestionSerializer
 from rest_framework import viewsets, filters, permissions, generics
 from django.http import JsonResponse
