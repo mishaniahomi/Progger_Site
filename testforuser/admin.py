@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Test, Category, Question, Answer, Kit
+from .models import Test, Category, Question, Answer, Kit, Note
 
 
 class TestAdmin(admin.ModelAdmin):
@@ -29,5 +29,6 @@ class CategoryAdmin(admin.ModelAdmin):
 admin.site.register(Question)
 admin.site.register(Answer)
 admin.site.register(Kit)
+admin.site.register(Note)
 admin.site.register(Test, TestAdmin)
 admin.site.register(Category, CategoryAdmin)

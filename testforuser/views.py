@@ -6,6 +6,7 @@ from rest_framework import viewsets, filters, permissions, generics
 from django.http import JsonResponse
 import json
 
+
 class AnswerViewSet(viewsets.ModelViewSet):
     search_fields = ["id", "title", "question_id"]
     filter_backends = (filters.SearchFilter,)
@@ -43,23 +44,23 @@ class TestDetaailView(DetailView):
 
 
 from django.views.decorators.csrf import csrf_exempt
+
+
 @csrf_exempt
 def proverka(request):
     if request.method == 'POST':
         data_bytes = request.body
         data_dict = json.loads(data_bytes.decode('utf-8'))
-        question_count = Question.objects.filter(test_id= data_dict['test_id']).count()
+        question_count = Question.objects.filter(test_id=data_dict['test_id']).count()
+        if not question_count:
+            return JsonResponse({"status": "not_success"})
         right_counter = 0
         for i in data_dict['answers']:
             if Answer.objects.get(id=i).right_false:
                 right_counter += 1
 
-
-    return JsonResponse({"status": "success", "question_count": question_count, "right_counter": right_counter, "progress":right_counter*100/question_count, "is_unanswered":question_count-data_dict['counter']})
-
-
-
-
-
-
-
+        return JsonResponse({"status": "success", "question_count": question_count, "right_counter": right_counter,
+                             "progress": right_counter * 100 / question_count,
+                             "is_unanswered": question_count - data_dict['counter']})
+    else:
+        return JsonResponse({"status": "not_success"})

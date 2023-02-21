@@ -1,4 +1,3 @@
-from django.contrib import admin
 from django.urls import path, include
 from .views import TestListView, TestDetaailView, AnswerViewSet, OneQuestion, proverka
 from rest_framework.routers import DefaultRouter
@@ -13,3 +12,5 @@ urlpatterns = [
     path("tags/<int:question>/", OneQuestion.as_view(), name='queststest'),
     path('', include(router.urls)),
 ]
+
+
